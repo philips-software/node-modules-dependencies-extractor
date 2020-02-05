@@ -1,5 +1,5 @@
 const chalk = require('chalk')
-const filesystem = require('fs')
+const fs = require('fs')
 const path = require('path')
 
 const {
@@ -8,7 +8,7 @@ const {
 
 const isDirectory = ({ resolvedPathOrFilename }) => {
   try {
-    var stat = filesystem.lstatSync(resolvedPathOrFilename)
+    var stat = fs.lstatSync(resolvedPathOrFilename)
     return stat.isDirectory()
   } catch (e) {
     // lstatSync throws an error if resolvedPathOrFilename doesn't exist
@@ -21,11 +21,11 @@ const isDirectory = ({ resolvedPathOrFilename }) => {
 // If the path to the file cannot be resolved, returns null.
 const resolvePathOrFilename = ({ pathOrFilename }) => {
   let resolvedFullName = null
-  if (filesystem.existsSync(pathOrFilename)) {
+  if (fs.existsSync(pathOrFilename)) {
     resolvedFullName = pathOrFilename
   } else {
     resolvedFullName = path.join(__dirname, pathOrFilename)
-    if (!filesystem.existsSync(resolvedFullName)) {
+    if (!fs.existsSync(resolvedFullName)) {
       errorMessage(chalk`File {blue ${pathOrFilename}} doesn't exist and could not be resolved to {blue ${resolvedFullName}}`)
       resolvedFullName = null
     }
