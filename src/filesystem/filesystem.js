@@ -33,7 +33,24 @@ const resolvePathOrFilename = ({ pathOrFilename }) => {
   return resolvedFullName
 }
 
+const getRelativeNameSubfoldersOf = ({ resolvedFolderName }) => {
+  let subfolders = []
+
+  // May contain files and folders
+  var thisDirContent = fs.readdirSync(resolvedFolderName)
+  while (thisDirContent.length > 0) {
+    const dirOrFileRelativeName = thisDirContent.shift()
+    const dirOrFileResolvedName = path.join(resolvedFolderName, dirOrFileRelativeName)
+    if (isDirectory({ resolvedPathOrFilename: dirOrFileResolvedName })) {
+      subfolders = subfolders.concat(dirOrFileRelativeName)
+    }
+  }
+
+  return subfolders
+}
+
 module.exports = {
   isDirectory,
-  resolvePathOrFilename
+  resolvePathOrFilename,
+  getRelativeNameSubfoldersOf
 }
