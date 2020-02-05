@@ -2,6 +2,7 @@
 
 const program = require('commander')
 const chalk = require('chalk')
+const { isDirectory, resolvePathOrFilename } = require('./filesystem/filesystem')
 
 const {
   setVerbose,
@@ -22,12 +23,17 @@ program
 
 const { input, output, verbose } = program
 
-const areInputParametersValid = ({ input }) => {
+const areCliInputParametersValid = ({ input }) => {
   if (!input) {
-    errorMessage(chalk`{red Mandatory input parameter is missing} (run 'extract --help' for usage); program exits`)
+    errorMessage(chalk`{red Mandatory input parameter is missing} (run 'extract --help' for usage).`)
     return false
   }
 
+  const resolvedPathOrFilename = resolvePathOrFilename({ pathOrFilename: input})
+  if(!isDirectory({ resolvedPathOrFilename })){
+    errorMessage(chalk`{red Input parameter cannot be resolved to an existig path}.`)
+    return false
+  }
   return true
 }
 
@@ -38,8 +44,16 @@ const processFiles = async () => {
     chalk`extract\n Program arguments:\n    input: {blue ${input}}\n    output: {blue ${output}}\n      verbose: {blue ${verbose}}`
   )
 
-  if (!areInputParametersValid({ input })) {
+  if (!areCliInputParametersValid({ input })) {
+    errorMessage(chalk`{red At least one program parameter is invalid}. Program exits.`)
+    return
+  }
 
+  const resolvedPathOrFilename = resolvePathOrFilename({ pathOrFilename: input})
+  if(input !== resolvedPathOrFilename) {
+    infoMessage(
+      chalk`Resolved input path ${input} to path {blue ${resolvedPathOrFilename}}`
+    )
   }
 }
 
