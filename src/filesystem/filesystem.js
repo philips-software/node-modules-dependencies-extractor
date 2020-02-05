@@ -49,8 +49,13 @@ const getRelativeNameSubfoldersOf = ({ resolvedFolderName }) => {
   return subfolders
 }
 
+const getResolvedNameSubfoldersOf = ({ resolvedFolderName }) =>
+  getRelativeNameSubfoldersOf({ resolvedFolderName })
+    .map(relativeSubdirName => path.join(resolvedFolderName, relativeSubdirName))
+
 module.exports = {
   isDirectory,
   resolvePathOrFilename,
-  getRelativeNameSubfoldersOf
+  getRelativeNameSubfoldersOf,
+  getResolvedNameSubfoldersOf
 }
