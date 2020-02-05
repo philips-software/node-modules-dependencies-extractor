@@ -30,7 +30,9 @@ const areCliInputParametersValid = ({ input }) => {
   }
 
   const resolvedPathOrFilename = resolvePathOrFilename({ pathOrFilename: input})
-  if(!isDirectory({ resolvedPathOrFilename })){
+  if(Boolean(resolvedPathOrFilename) == false 
+    || !isDirectory({ resolvedPathOrFilename })
+  ){
     errorMessage(chalk`{red Input parameter cannot be resolved to an existig path}.`)
     return false
   }
