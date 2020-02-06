@@ -12,6 +12,8 @@ const {
   errorMessage
 } = require('./logger/logger')
 
+const defaultOutputJsonFileName = 'dependencies_from_node_modules.json'
+
 program
   .version('0.0.1', '-v, --version')
   .option(
@@ -25,10 +27,14 @@ program
 
 const { input, output, verbose } = program
 
-const areCliInputParametersValid = ({ input }) => {
+const areCliInputParametersValid = ({ input, output }) => {
   if (!input) {
     errorMessage(chalk`{red Mandatory input parameter is missing} (run 'extract --help' for usage).`)
     return false
+  }
+  if (!output) {
+    infoMessage(`No output parameter provided; output filename will become the default name: ${defaultOutputJsonFileName}`)
+    output = defaultOutputJsonFileName
   }
 
   const resolvedPathOrFilename = resolvePathOrFilename({ pathOrFilename: input })
@@ -48,7 +54,7 @@ const processFiles = async () => {
     chalk`extract\n Program arguments:\n    input: {blue ${input}}\n    output: {blue ${output}}\n      verbose: {blue ${verbose}}`
   )
 
-  if (!areCliInputParametersValid({ input })) {
+  if (!areCliInputParametersValid({ input, output })) {
     errorMessage(chalk`{red At least one program parameter is invalid}. Program exits.`)
     return
   }
@@ -60,15 +66,14 @@ const processFiles = async () => {
     )
   }
 
-  const outputJsonFileName = 'dependencies_from_node_modules.json'
   const depsFromNodeModules = getDependenciesFromFolder({ currentFolder: resolvedInputPath })
   infoMessage(
-    chalk`Writing {blue ${depsFromNodeModules.length}} dependencies as JSON array to {blue ${outputJsonFileName}}`
+    chalk`Writing {blue ${depsFromNodeModules.length}} dependencies as JSON array to {blue ${output}}`
   )
   try {
-    await fs.writeJSON(outputJsonFileName, depsFromNodeModules, { spaces: 2, eol: '\n' })
+    await fs.writeJSON(output, depsFromNodeModules, { spaces: 2, eol: '\n' })
   } catch (e) {
-    errorMessage(chalk`Could not write to {blue ${outputJsonFileName}}`, e)
+    errorMessage(chalk`Could not write to {blue ${output}}`, e)
   }
 }
 
