@@ -2,7 +2,9 @@
 
 const program = require('commander')
 const chalk = require('chalk')
+const fs = require('fs-extra')
 const { isDirectory, resolvePathOrFilename } = require('./filesystem/filesystem')
+const { getDependenciesFromFolder } = require('./dependencies-extractor/dependencies-extractor')
 
 const {
   setVerbose,
@@ -29,10 +31,10 @@ const areCliInputParametersValid = ({ input }) => {
     return false
   }
 
-  const resolvedPathOrFilename = resolvePathOrFilename({ pathOrFilename: input})
-  if(Boolean(resolvedPathOrFilename) == false 
-    || !isDirectory({ resolvedPathOrFilename })
-  ){
+  const resolvedPathOrFilename = resolvePathOrFilename({ pathOrFilename: input })
+  if (Boolean(resolvedPathOrFilename) === false ||
+    !isDirectory({ resolvedPathOrFilename })
+  ) {
     errorMessage(chalk`{red Input parameter cannot be resolved to an existig path}.`)
     return false
   }
@@ -51,11 +53,22 @@ const processFiles = async () => {
     return
   }
 
-  const resolvedPathOrFilename = resolvePathOrFilename({ pathOrFilename: input})
-  if(input !== resolvedPathOrFilename) {
+  const resolvedInputPath = resolvePathOrFilename({ pathOrFilename: input })
+  if (input !== resolvedInputPath) {
     infoMessage(
-      chalk`Resolved input path ${input} to path {blue ${resolvedPathOrFilename}}`
+      chalk`Resolved input path ${input} to path {blue ${resolvedInputPath}}`
     )
+  }
+
+  const outputJsonFileName = 'dependencies_from_node_modules.json'
+  const depsFromNodeModules = getDependenciesFromFolder({ currentFolder: resolvedInputPath })
+  infoMessage(
+    chalk`Writing {blue ${depsFromNodeModules.length}} dependencies as JSON array to {blue ${outputJsonFileName}}`
+  )
+  try {
+    await fs.writeJSON(outputJsonFileName, depsFromNodeModules, { spaces: 2, eol: '\n' })
+  } catch (e) {
+    errorMessage(chalk`Could not write to {blue ${outputJsonFileName}}`, e)
   }
 }
 
