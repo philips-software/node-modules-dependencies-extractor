@@ -8,10 +8,13 @@
     "lint:fix": "yarn standard --fix",
     "test": "jest src --passWithNoTests",
     "coverage": "jest --coverage src",
-    "extract": "./src/cli-extract.js"
+    "extract-nm-dependencies": "./src/cli-extract.js"
   },
   "author": "Sanda Contiu",
   "license": "ISC",
+  "bin": {
+    "extract-nm-dependencies": "./src/cli-extract.js"
+  },
   "devDependencies": {
     "babel-eslint": "^10.0.1",
     "jest": "^24.1.0",
