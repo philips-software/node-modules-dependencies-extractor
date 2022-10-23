@@ -1,0 +1,24 @@
+name: npm
+
+on:
+  push:
+    branches-ignore:
+      - master
+      - release/*
+      
+jobs:
+  build:
+    name: npm
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    - name: Set up Node.js
+      uses: actions/setup-node@master
+      with:
+        node-version: 10.0.0
+    - name: Yarn
+      run: yarn
+    - name: Yarn lint
+      run: yarn lint
+    
